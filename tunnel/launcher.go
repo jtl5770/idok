@@ -2,8 +2,6 @@ package tunnel
 
 import (
 	"fmt"
-	"github.com/metal3d/idok/tunnel/go.crypto/ssh"
-	"github.com/metal3d/idok/utils"
 	"io"
 	"log"
 	"math/rand"
@@ -11,12 +9,14 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/metal3d/idok/utils"
+	"golang.org/x/crypto/ssh"
 )
 
 // SshForward digs a tunnel to xbmc/kodi, then open a port and bind socket to
 // the local http server
 func SshHTTPForward(config *ssh.ClientConfig, file, dir string) {
-
 	// Setup sshClientConn (type *ssh.ClientConn)
 	sshClientConn, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", utils.GlobalConfig.Target, utils.GlobalConfig.Sshport), config)
 	if err != nil {
@@ -50,7 +50,6 @@ func SshHTTPForward(config *ssh.ClientConfig, file, dir string) {
 // SshForwardStdin reads stdin and stream this to distant socket
 // through SSH tunnel
 func SshForwardStdin(config *ssh.ClientConfig) {
-
 	// Setup sshClientConn (type *ssh.ClientConn)
 	sshClientConn, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", utils.GlobalConfig.Target, utils.GlobalConfig.Sshport), config)
 	if err != nil {

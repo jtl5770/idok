@@ -22,7 +22,6 @@ type itemresp struct {
 
 // Send the play command to Kodi/XBMC.
 func Send(scheme, host, file string, port int) <-chan int {
-
 	u := url.URL{Path: file}
 	file = u.String()
 	addr := fmt.Sprintf("%s://%s:%d/%s", scheme, host, port, file)
@@ -58,7 +57,6 @@ func SendBasicStream(uri string, local bool) <-chan int {
 
 // Ask to play youtube video.
 func PlayYoutube(vidid string) <-chan int {
-
 	r, err := http.Post(GlobalConfig.JsonRPC, "application/json", bytes.NewBufferString(fmt.Sprintf(YOUTUBEAPI, vidid)))
 	if err != nil {
 		log.Fatal(err)
@@ -75,9 +73,9 @@ func PlayYoutube(vidid string) <-chan int {
 // test if media is playing, write 1 in returned chan when media has finished.
 func checkPlaying() <-chan int {
 	tick := time.Tick(TICK_CHECK * time.Second)
-	c := make(chan int, 0)
+	c := make(chan int)
 	go func() {
-		for _ = range tick {
+		for range tick {
 			resp := getActivePlayer()
 			if len(resp.Result) == 0 {
 				c <- 1

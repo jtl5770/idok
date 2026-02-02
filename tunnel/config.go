@@ -1,44 +1,41 @@
 package tunnel
 
 import (
-	"github.com/metal3d/idok/tunnel/go.crypto/ssh"
 	"log"
+	"net"
 	"os"
-	"os/user"
-	"path/filepath"
+
+	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/agent"
 )
 
 // NewConfig returns a ssh.Config pointer with 3 auth method if possible, rsa key pair,
 // dsa keypair and user/pass
 func NewConfig(username, password string) *ssh.ClientConfig {
-	u, _ := user.Current()
-	home := u.HomeDir
-	id_rsa_priv := filepath.Join(home, ".ssh", "id_rsa")
-	id_dsa_priv := filepath.Join(home, ".ssh", "id_dsa")
-
 	auth := []ssh.AuthMethod{}
 
-	// Try to parse keypair
-	if _, err := os.Stat(id_rsa_priv); err == nil {
-		if keypair, err := parseSSHKeys(id_rsa_priv); err == nil {
-			log.Println("Added RSA key")
-			auth = append(auth, ssh.PublicKeys(keypair))
-		}
+	socket := os.Getenv("SSH_AUTH_SOCK")
+	conn, err := net.Dial("unix", socket)
+	if err != nil {
+		log.Fatalf("Failed to open SSH_AUTH_SOCK: %v", err)
 	}
-	if _, err := os.Stat(id_dsa_priv); err == nil {
-		if keypair, err := parseSSHKeys(id_dsa_priv); err == nil {
-			log.Println("Added DSA key")
-			auth = append(auth, ssh.PublicKeys(keypair))
-		}
+	agentClient := agent.NewClient(conn)
+
+	// 2. Create the Signers from the agent (no passphrases needed here)
+	// The agent handles the crypto; your app just requests signatures.
+	signers, err := agentClient.Signers()
+	if err != nil {
+		log.Fatalf("Failed to get signers from agent: %v", err)
 	}
 
+	auth = append(auth, ssh.PublicKeys(signers...))
 	// add password method
 	auth = append(auth, ssh.Password(password))
 
 	// and set config
 	return &ssh.ClientConfig{
-		User: username,
-		Auth: auth,
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		User:            username,
+		Auth:            auth,
 	}
-
 }

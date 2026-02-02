@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
@@ -49,7 +48,6 @@ var GlobalConfig *Config
 
 // Set the target host, port and ssh jsonrpc user/pass
 func SetTarget(conf *Config) {
-
 	host := conf.Target
 	// XBMC can be configured to have username/password
 	if conf.User != "" {
@@ -84,10 +82,10 @@ func CheckLocalConfigFiles() (string, bool) {
 }
 
 func LoadLocalConfig(filename string, config *Config) {
-	content, _ := ioutil.ReadFile(filename)
-	lines := strings.Split(string(content), "\n")
+	content, _ := os.ReadFile(filename)
+	lines := strings.SplitSeq(string(content), "\n")
 
-	for _, line := range lines {
+	for line := range lines {
 		if strings.Trim(line, "") == "" {
 			continue
 		}
@@ -97,7 +95,7 @@ func LoadLocalConfig(filename string, config *Config) {
 		}
 		// Get key = value...
 		val := strings.SplitN(line, "=", 2)
-		for i, _ := range val {
+		for i := range val {
 			val[i] = strings.Trim(val[i], " ")
 		}
 
@@ -153,8 +151,7 @@ func LoadLocalConfig(filename string, config *Config) {
 }
 
 func PrintExampleConfig() {
-
-	fmt.Println(`# blank value means default
+	fmt.Print(`# blank value means default
 #
 # Idok checks if that file exists in that order:
 # - ./idok.conf

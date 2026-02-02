@@ -21,7 +21,6 @@ var (
 )
 
 func main() {
-
 	// flags
 	var (
 		xbmcaddr     = flag.String("target", "", "xbmc/kodi ip (raspbmc address, ip or hostname)")
@@ -34,7 +33,7 @@ func main() {
 		sshpassword  = flag.String("sshpass", "", "ssh password")
 		sshport      = flag.Int("sshport", 22, "target ssh port")
 		version      = flag.Bool("version", false, fmt.Sprintf("Print the current version (%s)", VERSION))
-		xbmcport     = flag.Int("targetport", 80, "XBMC/Kodi jsonrpc port")
+		xbmcport     = flag.Int("targetport", 8080, "XBMC/Kodi jsonrpc port")
 		stdin        = flag.Bool("stdin", false, "read file from stdin to stream")
 		confexample  = flag.Bool("conf-example", false, "print a configuration file example to STDOUT")
 		disablecheck = flag.Bool("disable-check-release", false, "disable release check")
@@ -147,7 +146,7 @@ func main() {
 	}
 
 	if conf.Ssh && !*nossh {
-		config := tunnel.NewConfig(*sshuser, *sshpassword)
+		config := tunnel.NewConfig(conf.Sshuser, conf.Sshpassword)
 		// serve ssh tunnel !
 		if !*stdin {
 			tunnel.SshHTTPForward(config, file, dir)

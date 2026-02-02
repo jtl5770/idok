@@ -1,8 +1,10 @@
 Idok
 ====
-
-[![status](https://sourcegraph.com/api/repos/github.com/metal3d/idok/.badges/status.svg)](https://sourcegraph.com/github.com/metal3d/idok)
-[![library users](https://sourcegraph.com/api/repos/github.com/metal3d/idok/.badges/library-users.svg)](https://sourcegraph.com/github.com/metal3d/idok)
+This is a fork of https://github.com/metal3d/idok. I modernized the
+build a bit, removed the local crypto lib and made public key ssh work
+with the ssh-agent. No real new features are planned, I just made it
+work for me. If the original repo would ever come back to life, maybe
+similar changes could be implemented there.
 
 What is it ?
 ============
